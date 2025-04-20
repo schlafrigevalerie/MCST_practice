@@ -9,7 +9,9 @@ struct merge_sort_args {
     int* a;
 };
 
-void merge(int a[], int left, int mid, int right) {
+void 
+merge(int a[], int left, int mid, int right) 
+{
     int i1, i2, i3;
     int s1 = mid - left + 1;
     int s2 = right - mid;
@@ -49,7 +51,9 @@ void merge(int a[], int left, int mid, int right) {
     free(rightHalf);
 }
 
-void* merge_sort(void* args) {
+void* 
+merge_sort(void* args) 
+{
     struct merge_sort_args* arg = (struct merge_sort_args*)args;
     int left = arg->left;
     int right = arg->right;
@@ -71,7 +75,9 @@ void* merge_sort(void* args) {
     return 0;
 }
 
-int main() {
+int 
+main() 
+{
     srand(time(NULL));
 
     int size = rand() % 10 + 1;
