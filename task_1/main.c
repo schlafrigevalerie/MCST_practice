@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <time.h>
 
+typedef struct {
+    int left;
+    int right;
+    int* a;
+} merge_sort_args;
 
 void 
 merge(int a[], int left, int mid, int right)
@@ -46,9 +51,11 @@ merge(int a[], int left, int mid, int right)
     }
 }
 
-void 
-merge_sort(int left, int right, int arr[])
+void* merge_sort(void* args)
+// merge_sort(int left, int right, int arr[])
 {
+    merge_sort_args* arg = (merge_sort_args*) args;
+
     if (left < right){
         int mid = left + ((right - left) / 2);
         merge_sort(left, mid, arr);
