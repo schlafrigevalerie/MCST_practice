@@ -37,14 +37,13 @@ void file_type(mode_t mode) {
 }
 
 int main(int argc, char *argv[]){
-    //проверка данных
     if (argc != 2) {
         fprintf(stderr, "Некоректные данные\n");
         exit(EXIT_FAILURE);
     }
 
     struct stat fileStat;
-    //проверяем успешность завершения вызова
+
     if (stat(argv[1], &fileStat) == -1) {
         perror("stat");
         exit(EXIT_FAILURE);
