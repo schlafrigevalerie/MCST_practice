@@ -72,6 +72,29 @@ void to_rpn(const char *infix, char *postfix) {
     postfix[j] = '\0';
 }
 
+int eval_rpn(const char *postfix, Variable *vars, int var_count) {
+    int stack[512], top = -1;
+    for (int i = 0; postfix[i]; i++) {
+        char ch = postfix[i];
+        if (isalpha(ch)) {
+            stack[++top] = get_var_value(ch, vars, var_count);
+        } else if (ch == '!') {
+            int val = stack[top--];
+            stack[++top] = !val;
+        } else if (ch == '&') {
+            int b = stack[top--];
+            int a = stack[top--];
+            stack[++top] = a && b;
+        } else if (ch == '|') {
+            int b = stack[top--];
+            int a = stack[top--];
+            stack[++top] = a || b;
+        }
+    }
+    return stack[top];
+}
+
+
 int main() {
 
 }
