@@ -42,3 +42,30 @@ void copy_and_print(const char* input_file, const char* output_file, int print_a
         }
     }
 }
+
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+    printf("Неверное количество аргументов. Необходимо 2, введено %d", argc);
+    exit(EXIT_FAILURE);
+  }
+
+    const char* input_file = argv[1];
+    const char* child_output = "child_output.txt";
+    const char* parent_output = "parent_output.txt";
+
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        perror("Ошибка при вызове fork");
+        exit(EXIT_FAILURE);
+    } else if (pid == 0) {
+        copy_and_print(input_file, child_output, 1);
+        exit(EXIT_SUCCESS);
+    } else {
+        wait(NULL); 
+        copy_and_print(input_file, parent_output, 1);
+    }
+
+    return 0;
+    
+}
