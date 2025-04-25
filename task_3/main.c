@@ -5,33 +5,23 @@
 #define MAX_LINES 1024
 #define MAX_LINE_LEN 256
 
-int 
-alpha_sort(const void *a, const void *b) 
-{
+int alpha_sort(const void *a, const void *b) {
     return strcmp(*(const char **)a, *(const char **)b);
 }
 
-int 
-reverse_alpha_sort(const void *a, const void *b) 
-{
+int reverse_alpha_sort(const void *a, const void *b) {
     return -strcmp(*(const char **)a, *(const char **)b);
 }
 
-int 
-length_sort(const void *a, const void *b) 
-{
+int length_sort(const void *a, const void *b) {
     return strlen(*(const char **)a) - strlen(*(const char **)b);
 }
 
-int 
-reverse_length_sort(const void *a, const void *b) 
-{
+int reverse_length_sort(const void *a, const void *b) {
     return strlen(*(const char **)b) - strlen(*(const char **)a);
 }
 
-int 
-main() 
-{
+int main() {
     char file_in[256];
     char file_out[256];
     int type_sort;
