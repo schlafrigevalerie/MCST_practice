@@ -17,6 +17,7 @@ int main() {
     int max_sum = arr[0];
     int curr_sum = arr[0];
     int start = 0, end = 0, temp_start = 0;
+
     for (int i = 1; i < SIZE; i++) {
         if (arr[i] > arr[i - 1]) {
             curr_sum += arr[i];
@@ -30,6 +31,7 @@ int main() {
             temp_start = i;
         }
     }
+    
     if (curr_sum > max_sum) {
         max_sum = curr_sum;
         start = temp_start;
