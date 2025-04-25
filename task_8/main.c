@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
 
@@ -25,6 +24,7 @@ int main() {
             B[i][j] = 2;
         }
     }
+    signal(SIGINT, handle_sigint); //обработчик сигнала
     //перемножаем матрицы
     for (int i = 0; i < SIZE; i++) {
         current_i = i;
@@ -34,8 +34,9 @@ int main() {
             for (int k = 0; k < SIZE; k++) {
                 C[i][j] += A[i][k] * B[k][j];
             }
-            sleep(1);
+            sleep(1); 
         }
     }
+    printf("Multiplication completed.\n");
     return 0;
 }
