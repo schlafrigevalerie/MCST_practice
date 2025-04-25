@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <getopt.h>
@@ -61,6 +60,27 @@ int main(int argc, char *argv[]) {
                 return 1;
         }
     }
+
+    for (int i = optind; i < argc; i++) {
+        non_opts[non_opt_count++] = argv[i];
+    }
+
+    printf("Options are correct:");
+    if (t_flag) printf(" t");
+    if (m_flag) printf(" m");
+    if (c_flag) printf(" c");
+    if (s_flag) printf(" s");
+    for (int i = 0; i < elbrus_count; i++) {
+        printf(" elbrus=%s", elbrus_values[i]);
+    }
+
+    printf(", non-options:");
+    for (int i = 0; i < non_opt_count; i++) {
+        printf(" %s", non_opts[i]);
+    }
+    printf(".\n");
+
+    return 0;
     
 }
 
