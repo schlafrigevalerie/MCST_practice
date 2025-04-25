@@ -7,7 +7,7 @@ typedef struct {
     int value;
 } Variable;
 
-int get_var_value(char ch, Variable *vars, int var_count) {
+int get_var_value(char ch, Variable *vars, int var_count, int *ok) {
     for (int i = 0; i < var_count; i++) {
         if (vars[i].name == ch) return vars[i].value;
     }
@@ -100,57 +100,95 @@ int to_rpn(const char *expr, char *output) {
     return 1;
 }
 
-int eval_rpn(const char *postfix, Variable *vars, int var_count) {
-    int stack[512], top = -1;
-    for (int i = 0; postfix[i]; i++) {
-        char ch = postfix[i];
-        if (isalpha(ch)) {
-            stack[++top] = get_var_value(ch, vars, var_count);
-        } else if (ch == '!') {
-            int val = stack[top--];
-            stack[++top] = !val;
-        } else if (ch == '&') {
+int eval_rpn(const char *rpn, Variable *vars, int var_count, int *ok) {
+    int stack[512];
+    int top = -1;
+
+    for (int i = 0; rpn[i]; ++i) {
+        char token = rpn[i];
+        if (isalpha(token)) {
+            int val = get_var_value(token, vars, var_count, ok);
+            if (!*ok) return 0;
+            stack[++top] = val;
+        } else if (token == '!') {
+            if (top < 0) {
+                printf("Error: NOT operator missing operand\n");
+                *ok = 0;
+                return 0;
+            }
+            stack[top] = !stack[top];
+        } else if (token == '&' || token == '|') {
+            if (top < 1) {
+                printf("Error: binary operator missing operands\n");
+                *ok = 0;
+                return 0;
+            }
             int b = stack[top--];
             int a = stack[top--];
-            stack[++top] = a && b;
-        } else if (ch == '|') {
-            int b = stack[top--];
-            int a = stack[top--];
-            stack[++top] = a || b;
+            stack[++top] = (token == '&') ? (a && b) : (a || b);
+        } else {
+            printf("Error: unknown operator '%c'\n", token);
+            *ok = 0;
+            return 0;
         }
     }
-    return stack[top];
+
+    if (top != 0) {
+        printf("Error: invalid expression\n");
+        *ok = 0;
+        return 0;
+    }
+
+    return stack[0];
 }
 
 
 int main() {
     int var_count;
-    printf("Enter number of variables (max 26): ");
-    scanf("%d", &var_count);
-    getchar(); // clear newline
+    Variable vars[512];
+    char expr[512];
+    char rpn[512];
+    int ok = 1;
 
-    if (var_count > 26) var_count = 26;
-
-    Variable vars[26];
-    for (int i = 0; i < var_count; i++) {
-        vars[i].name = 'A' + i;
-        printf("%c = ", vars[i].name);
-        scanf("%d", &vars[i].value);
-        getchar();
+    printf("Enter number of variables (max %d): ", 512);
+    if (scanf("%d", &var_count) != 1 || var_count <= 0 || var_count > 512) {
+        printf("Error: invalid number of variables\n");
+        return 1;
     }
 
-    char expr[512];
-    printf("Enter logical expression:\n");
-    fgets(expr, 512, stdin);
-    expr[strcspn(expr, "\n")] = 0; // remove newline
+    for (int i = 0; i < var_count; ++i) {
+        int val;
+        printf("%c = ", 'A' + i);
+        if (scanf("%d", &val) != 1 || (val != 0 && val != 1)) {
+            printf("Error: variable must be 0 or 1\n");
+            return 1;
+        }
+        vars[i].name = 'A' + i;
+        vars[i].value = val;
+    }
 
-    normalize(expr);
+    getchar(); // eat newline
+    printf("Enter logical expression (use A-Z, !, &, |, parentheses):\n");
+    if (!fgets(expr, sizeof(expr), stdin)) {
+        printf("Error: failed to read expression\n");
+        return 1;
+    }
+    expr[strcspn(expr, "\n")] = '\0';
 
-    char rpn[512];
-    to_rpn(expr, rpn);
+    if (strlen(expr) == 0) {
+        printf("Error: empty expression\n");
+        return 1;
+    }
 
-    int result = eval_rpn(rpn, vars, var_count);
+    if (!to_rpn(expr, rpn)) {
+        return 1;
+    }
+
+    int result = eval_rpn(rpn, vars, var_count, &ok);
+    if (!ok) {
+        return 1;
+    }
+
     printf("RESULT: %d\n", result);
-
     return 0;
 }
